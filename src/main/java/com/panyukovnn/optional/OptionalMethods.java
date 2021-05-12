@@ -2,7 +2,6 @@ package com.panyukovnn.optional;
 
 import com.panyukovnn.optional.exception.NotFoundException;
 import com.panyukovnn.optional.model.Personage;
-import com.sun.xml.internal.bind.v2.runtime.output.FastInfosetStreamWriterOutput;
 import org.junit.Test;
 
 import java.util.List;
@@ -10,8 +9,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.panyukovnn.optional.PersonageUtil.personages;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
 /**
  * Методы optional
@@ -27,8 +25,11 @@ public class OptionalMethods {
     public void orElseMethods() {
         Personage personageOrElse = personages.stream()
                 .filter(p -> p.getName().equals("Nobody"))
-                .findFirst()
+                .findFirst() // Optional<Personage>
                 .orElse(new Personage()); // Если .findFirst() вернул Optional.empty()
+
+        assertNotNull(personageOrElse);
+        assertNull(personageOrElse.getName());
     }
 
     /**
@@ -45,6 +46,9 @@ public class OptionalMethods {
 
                     return badger;
                 });
+
+        assertNotNull(personageOrElseGet);
+        assertEquals(Optional.of(1.0d), personageOrElseGet.getMeth());
     }
 
     /**
@@ -52,7 +56,7 @@ public class OptionalMethods {
      */
     @Test
     public void orElseThrow() {
-        Personage personageOrElseThrow = personages.stream()
+        personages.stream()
                 .filter(p -> p.getName().equals("Nobody"))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException()); // NotFoundException::new
@@ -65,13 +69,15 @@ public class OptionalMethods {
      */
     @Test
     public void map() {
-        Optional<Personage> personage = personages.stream()
-                .filter(p -> p.getName().equals("Nobody"))
+        Optional<Personage> oPersonage = personages.stream()
+                .filter(p -> p.getName().equals("Jesse"))
                 .findFirst();
 
-        String surname = personage.map(p -> p.getSurname()).orElse("UNKNOWN");
+        String surname = oPersonage       // Optional<Personage>
+                .map(p -> p.getSurname()) // Optional<String>
+                .orElse("Pinkman");
 
-        assertEquals("UNKNOWN", surname);
+        assertEquals("Pinkman", surname);
     }
 
     /**
@@ -101,7 +107,8 @@ public class OptionalMethods {
     }
 
     /**
-     * Метод ifPresent (не путать с isPresent()) - выполняет lambda функцию, если optional содержит значение
+     * Метод ifPresent (не путать с isPresent())
+     * выполняет lambda функцию, если optional содержит значение
      */
     @Test
     public void ifPresent() {
@@ -117,19 +124,19 @@ public class OptionalMethods {
      */
     @Test
     public void equalsAndHashCode() {
-        Optional<Personage> walter = personages.stream()
+        Optional<Personage> oWalter = personages.stream()
                 .filter(p -> p.getName().equals("Walter"))
                 .findFirst();
 
-        Optional<Personage> jesse = personages.stream()
+        Optional<Personage> oJesse = personages.stream()
                 .filter(p -> p.getName().equals("Jesse"))
                 .findFirst();
 
-        assertNotEquals(walter, jesse);
+        assertNotEquals(oWalter, oJesse);
 
-        Optional<Personage> walterClone = Optional.of(new Personage("Walter", "White", ""));
+        Optional<Personage> oWalterClone = Optional.of(new Personage("Walter", "White", ""));
 
-        assertEquals(walter, walterClone);
+        assertEquals(oWalter, oWalterClone);
     }
 
     /**
@@ -137,13 +144,15 @@ public class OptionalMethods {
      */
     @Test
     public void testOptional() {
-        Optional<Personage> walter = personages.stream()
+        Optional<Personage> oWalter = personages.stream()
                 .filter(p -> p.getName().equals("Walter"))
                 .findFirst();
 
-        assertNotEquals(new Personage("Walter", "White", ""), walter);
+        Personage walterClone = new Personage("Walter", "White", "");
 
-        assertEquals(Optional.of(new Personage("Walter", "White", "")), walter);
+        assertNotEquals(walterClone, oWalter);
+
+        assertEquals(Optional.of(walterClone), oWalter);
 
         Optional<Personage> nobody = personages.stream()
                 .filter(p -> p.getName().equals("Nobody"))
@@ -165,5 +174,34 @@ public class OptionalMethods {
 
 //        Если текущий optional содержит значение то возвращает его, иначе возвращает другой optional
 //        Optional<T> Optional.or(Supplier<Optional<T>>)
+    }
+
+    /**
+     * Способ отсеять все пустые optional при формировании списка из значений optional'ов
+     */
+    @Test
+    public void removeEmptyOptionalFromList() {
+        List<Double> methCount = personages.stream()
+                .map(Personage::getMeth)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+
+        System.out.println(methCount);
+    }
+
+    /**
+     * Как адаптировать код к ранее написанному коду, использующему null
+     */
+    @Test
+    public void adaptingWithNull() {
+        Optional.ofNullable(new Object());
+
+        // Не рекомендуется, поскольку данную конструкцию используют слишком часто
+        Personage nobody = getPersonage().orElse(null);
+    }
+
+    private Optional<Personage> getPersonage() {
+        return Optional.of(new Personage());
     }
 }

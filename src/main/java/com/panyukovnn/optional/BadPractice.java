@@ -31,7 +31,7 @@ public class BadPractice {
         assertEquals(result, getDefaultValue());
 
         // Хорошо
-        result = (s != null) ? s : getDefaultValue();
+        result = s != null ? s : getDefaultValue();
 
         assertEquals(result, getDefaultValue());
 
@@ -58,7 +58,8 @@ public class BadPractice {
     private Optional<Double> optionalDouble; // Антипаттерн
 
     public void notUseOptional(Optional<Integer> optionalInteger /* Антипаттерн */) {
-        List<Optional<String>> stringOptionals = new ArrayList<>(); // Замедляет работу программы из-за дополнительного оборачивания объектов
+        // Замедляет работу программы из-за дополнительного оборачивания объектов
+        List<Optional<String>> stringOptionals = new ArrayList<>();
     }
 
     /**
@@ -76,4 +77,9 @@ public class BadPractice {
      * Optional это не замена null, он лишь решает проблему, когда нам нужно
      * вернуть из метода значение или default value
      */
+
+    public Optional<String> getString() {
+        Optional.empty();
+        return Optional.of("Hello World");
+    }
 }

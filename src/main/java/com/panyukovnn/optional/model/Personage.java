@@ -35,10 +35,10 @@ public class Personage {
      */
     private Double meth;
 
-    public Personage(String name, String surname, String featrue) {
+    public Personage(String name, String surname, String feature) {
         this.name = name;
         this.surname = surname;
-        this.feature = featrue;
+        this.feature = feature;
     }
 
     public Optional<Double> getMeth() {

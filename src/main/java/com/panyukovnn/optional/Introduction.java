@@ -18,16 +18,16 @@ public class Introduction {
      */
     public void noOptional() {
 //        personages.stream()
-//                .search(c -> c.getName().equals("Jesse"));
+//                .search(c -> c.getName().equals("Jesse")); // Personage или null
 
 //        personages.stream()
-//                .search(c -> c.getName().equals("Jessi"));
-//                .getName(); <------- NullPointerException
+//                .search(c -> c.getName().equals("Jessi"))
+//                .getFeature(); <------- NullPointerException
 
 //        Personage jesse = personages.stream()
 //                .search(c -> c.getName().equals("Jesse"));
 //
-//        return jesse != null ? jesse.getMoney() : 0;
+//        String jesseFeature = jesse != null ? jesse.getFeature() : "UNKNOWN";
     }
 
     @Test
@@ -64,8 +64,9 @@ public class Introduction {
         // Как нам получить фамилию персонажа ?
         personages.stream()
                 .filter(p -> p.getName().equals("Gustavo"))
-                .findFirst(); // Optional<Personage>
-
+                .findFirst() // Optional<Personage>
+                .get()       // Personage
+                .getSurname();
 
         // Что если мы не сможем найти персонажа ?
         // Т.е. что произойдет если мы вызовем метод get у Optional.empty() ?
@@ -76,7 +77,8 @@ public class Introduction {
     }
 
     /**
-     * Правило №2: никогда не использовать optional.get(), если перед этим он не проверен при помощи optional.isPresent
+     * Правило №2: никогда не использовать optional.get(),
+     *             если перед этим он не проверен при помощи optional.isPresent()
      * Правило №3: не используйте связку get – isPresent, ищите альтернативы
      */
     @Test
